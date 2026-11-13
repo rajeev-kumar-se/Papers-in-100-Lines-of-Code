@@ -5,26 +5,27 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from keras.datasets.mnist import load_data
 from unet import UNet
+# declare once and use it everywhere
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# data loading and preprocessing
 (trainX, trainy), (testX, testy) = load_data()
 trainX = np.float32(trainX) / 255.
 testX = np.float32(testX) / 255.
 
-
-def sample_batch(batch_size, device):
+# sample batch 
+def sample_batch(batch_size):
     indices = torch.randperm(trainX.shape[0])[:batch_size]
     data = torch.from_numpy(trainX[indices]).unsqueeze(1).to(device)
     return torch.nn.functional.interpolate(data, 32)
 
-
+# main model class with init, sampling and training methods
 class DiffusionModel:
 
-    def __init__(self, T: int, model: nn.Module, device: str):
+    def __init__(self, T: int, model: nn.Module):
         self.T = T
-        self.function_approximator = model.to(device)
-        self.device = device
-
-        self.beta = torch.linspace(1e-4, 0.02, T).to(device)
+        self.function_approximator = model
+        self.beta = torch.linspace(1e-4, 0.02, T).to(self.device)
         self.alpha = 1. - self.beta
         self.alpha_bar = torch.cumprod(self.alpha, dim=0)
 
@@ -33,8 +34,8 @@ class DiffusionModel:
         Algorithm 1 in Denoising Diffusion Probabilistic Models
         """
 
-        x0 = sample_batch(batch_size, self.device)
-        t = torch.randint(1, self.T + 1, (batch_size,), device=self.device,
+        x0 = sample_batch(batch_size)
+        t = torch.randint(1, self.T + 1, (batch_size,), device,
                           dtype=torch.long)
         eps = torch.randn_like(x0)
 
@@ -58,11 +59,11 @@ class DiffusionModel:
         """
 
         x = torch.randn((n_samples, image_channels, img_size[0], img_size[1]),
-                        device=self.device)
+                        device)
         progress_bar = tqdm if use_tqdm else lambda x: x
         for t in progress_bar(range(self.T, 0, -1)):
             z = torch.randn_like(x) if t > 1 else torch.zeros_like(x)
-            t = torch.ones(n_samples, dtype=torch.long, device=self.device) * t
+            t = torch.ones(n_samples, dtype=torch.long, device) * t
 
             beta_t = self.beta[t - 1].unsqueeze(-1).unsqueeze(-1).unsqueeze(-1)
             alpha_t = self.alpha[t - 1].unsqueeze(-1).unsqueeze(-1).unsqueeze(-1)
@@ -76,17 +77,17 @@ class DiffusionModel:
 
 
 if __name__ == "__main__":
-    device = 'cuda'
+    # Arch Prep
     batch_size = 64
-    model = UNet()
-    optimizer = torch.optim.Adam(model.parameters(), lr=2e-5)
-    diffusion_model = DiffusionModel(1000, model, device)
+    denoiser_model = UNet()
+    optimizer = torch.optim.Adam(denoiser_model.parameters(), lr=2e-5)
+    diffusion_model = DiffusionModel(1000, denoiser_model).to(device)
 
     # Training
     for epoch in tqdm(range(40_000)):
         loss = diffusion_model.training(batch_size, optimizer)
 
-    # Plot results
+    # Inference
     nb_images = 81
     samples = diffusion_model.sampling(n_samples=nb_images, use_tqdm=False)
     plt.figure(figsize=(17, 17))
