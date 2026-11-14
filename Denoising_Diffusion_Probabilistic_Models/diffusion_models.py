@@ -89,8 +89,10 @@ class DiffusionModel(nn.Module):
         # [64, 1, 32, 32]
         x0 = sample_batch(batch_size)
 
+        # t.shape = [64]
         t = torch.randint(
-            1, self.T + 1, (batch_size,),
+            1, self.T + 1, 
+            (batch_size,),
             device=device,
             dtype=torch.long
         )
@@ -103,6 +105,7 @@ class DiffusionModel(nn.Module):
         alpha_bar_t = self.alpha_bar[t - 1].unsqueeze(-1).unsqueeze(
             -1).unsqueeze(-1)
 
+        # xt, t-1
         eps_predicted = self.function_approximator(
             torch.sqrt(alpha_bar_t) * x0 +
             torch.sqrt(1 - alpha_bar_t) * eps,
@@ -111,23 +114,23 @@ class DiffusionModel(nn.Module):
 
         loss = nn.functional.mse_loss(eps, eps_predicted)
 
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+        optimizer.zero_grad() # clear
+        loss.backward() # calculate gradients
+        optimizer.step() # update gradients
 
         return loss.item()
 
-    @torch.no_grad()
+    @torch.no_grad() # don't need gradient tracking
     def sampling(self, n_samples=1, image_channels=1, img_size=(32, 32)):
         """
         Algorithm 2 in Denoising Diffusion Probabilistic Models
         """
-
+        # x.shape = [81, 1, 32, 32]
         x = torch.randn(
             (n_samples, image_channels, img_size[0], img_size[1]),
             device=device
         )
-
+        # 1000, 999, 998, ..., 3, 2, 1
         for t in tqdm(range(self.T, 0, -1)):
             z = torch.randn_like(x) if t > 1 else torch.zeros_like(x)
 
