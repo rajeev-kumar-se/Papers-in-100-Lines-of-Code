@@ -1,21 +1,37 @@
 # DDPM:
-# 1. Initialize noise schedule (beta, alpha, alpha_bar).
+# 1. Initialize noise schedule
+#     beta_t       = noise schedule
+#     alpha_t      = 1 - beta_t
+#     alpha_bar_t  = cumulative_product(alpha_t)
 # 2. TRAINING:
-#    a. Sample original images x0.
-#    b. Randomly sample timestep t.
-#    c. Generate Gaussian noise eps.
-#    d. Create noisy image xt.
-#    e. Predict noise using neural network.
-#    f. Calculate MSE(noise, predicted_noise).
-#    g. Update neural network.
+#     a. Sample original images x0.
+#     b. Randomly sample timestep t.
+#     c. Generate Gaussian noise eps ~ N(0, I).
+#     d. Create noisy image xt:
+#        xt = sqrt(alpha_bar_t) * x0
+#             + sqrt(1 - alpha_bar_t) * eps
+#     e. Predict noise:
+#        eps_pred = epsilon_theta(xt, t)
+#     f. Calculate loss:
+#        L = MSE(eps, eps_pred)
+#     g. Update neural network:
+#        optimizer.step()
 # 3. SAMPLING:
-#    a. Start with random Gaussian noise xT.
-#    b. For t = T to 1:
-#       i. Predict noise.
-#       ii. Calculate reverse mean.
-#       iii. Sample random noise z.
-#       iv. Calculate previous image xt-1.
-#    c. Return generated image.
+#     a. Start with Gaussian noise:
+#        xT ~ N(0, I)
+#     b. For t = T to 1:
+#        i.   Predict noise:
+#             eps_pred = epsilon_theta(xt, t)
+#        ii.  Calculate reverse mean:
+#             mu = 1/sqrt(alpha_t) *
+#                  (xt - (1-alpha_t)/sqrt(1-alpha_bar_t)
+#                  * eps_pred)
+#        iii. Sample random noise:
+#             z ~ N(0, I), if t > 1
+#             z = 0, if t = 1
+#        iv.  Calculate previous image:
+#             xt-1 = mu + sqrt(beta_t) * z
+#     c. Return generated image x0.
 import torch
 import torch.nn as nn
 import numpy as np
