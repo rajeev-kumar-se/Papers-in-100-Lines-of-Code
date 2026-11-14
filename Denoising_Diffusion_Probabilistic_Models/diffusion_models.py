@@ -1,3 +1,21 @@
+# DDPM:
+# 1. Initialize noise schedule (beta, alpha, alpha_bar).
+# 2. TRAINING:
+#    a. Sample original images x0.
+#    b. Randomly sample timestep t.
+#    c. Generate Gaussian noise eps.
+#    d. Create noisy image xt.
+#    e. Predict noise using neural network.
+#    f. Calculate MSE(noise, predicted_noise).
+#    g. Update neural network.
+# 3. SAMPLING:
+#    a. Start with random Gaussian noise xT.
+#    b. For t = T to 1:
+#       i. Predict noise.
+#       ii. Calculate reverse mean.
+#       iii. Sample random noise z.
+#       iv. Calculate previous image xt-1.
+#    c. Return generated image.
 import torch
 import torch.nn as nn
 import numpy as np
