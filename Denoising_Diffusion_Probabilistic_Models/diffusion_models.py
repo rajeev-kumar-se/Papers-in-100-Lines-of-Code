@@ -39,9 +39,14 @@ import matplotlib.pyplot as plt
 from keras.datasets.mnist import load_data
 from unet import UNet
 # declare once and use it everywhere
+# torch.device = where tensor operations will be performed (CPU or GPU)
+# torch.cuda.is_available() = only available in cuda.
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # data loading and preprocessing
+# ([60000, 28, 28], [60000], [10000, 28, 28], [10000])
+# trainX[0] = 28x28 image, trainy[0] = label of trainX[0]
+# we should always normalize the data to [0, 1] range for better convergence
 (trainX, trainy), (testX, testy) = load_data()
 trainX = torch.tensor(trainX, dtype=torch.float32) / 255.
 testX = torch.tensor(testX, dtype=torch.float32) / 255.
@@ -50,8 +55,11 @@ testy = torch.as_tensor(testy)
 
 # sample batch 
 def sample_batch(batch_size):
+    # Generates a random permutation of integers from 0 to 59999.
     indices = torch.randperm(trainX.shape[0])[:batch_size]
+    # [Batch, Height, Width] -> [Batch, Channel, Height, Width]
     data = trainX[indices].unsqueeze(1).to(device)
+    # [64, 1, 28, 28] -> [64, 1, 32, 32], Why?
     return torch.nn.functional.interpolate(data, 32)
 
 # main model class with init, sampling and training methods
@@ -63,10 +71,13 @@ class DiffusionModel(nn.Module):
         self.T = T
         self.function_approximator = model
 
+        # B1 = 1e-4, B2, ..., BT=2e-2
         beta = torch.linspace(1e-4, 0.02, T)
         alpha = 1. - beta
+        # why dim=0?
         alpha_bar = torch.cumprod(alpha, dim=0)
 
+        # parameters vs buffers?
         self.register_buffer("beta", beta)
         self.register_buffer("alpha", alpha)
         self.register_buffer("alpha_bar", alpha_bar)
@@ -75,7 +86,7 @@ class DiffusionModel(nn.Module):
         """
         Algorithm 1 in Denoising Diffusion Probabilistic Models
         """
-
+        # [64, 1, 32, 32]
         x0 = sample_batch(batch_size)
 
         t = torch.randint(
@@ -83,7 +94,7 @@ class DiffusionModel(nn.Module):
             device=device,
             dtype=torch.long
         )
-
+         # [64, 1, 32, 32]
         eps = torch.randn_like(x0)
 
         # Take one gradient descent step

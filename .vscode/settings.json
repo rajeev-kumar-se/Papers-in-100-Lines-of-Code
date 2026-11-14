@@ -1,0 +1,16 @@
+{
+  // Ctrl+Click / Go to Definition for Python is handled by Pylance,
+  // which needs a selected interpreter to resolve installed packages.
+  "python.defaultInterpreterPath": "C:\\Python314\\python.exe",
+  "python.languageServer": "Pylance",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.indexing": true,
+  "python.analysis.diagnosticMode": "openFilesOnly",
+
+  // Many papers here only use keras for keras.datasets.mnist.load_data.
+  // Keras 3 defaults to a TensorFlow backend, which is not installed, so
+  // tell it to use the already-installed PyTorch backend instead.
+  "terminal.integrated.env.windows": {
+    "KERAS_BACKEND": "torch"
+  }
+}
