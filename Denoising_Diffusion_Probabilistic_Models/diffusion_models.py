@@ -134,6 +134,7 @@ class DiffusionModel(nn.Module):
         for t in tqdm(range(self.T, 0, -1)):
             z = torch.randn_like(x) if t > 1 else torch.zeros_like(x)
 
+            # why?
             t = torch.ones(
                 n_samples,
                 dtype=torch.long,
@@ -170,14 +171,12 @@ if __name__ == "__main__":
 
     # Inference
     nb_images = 81
-
     samples = diffusion_model.sampling(n_samples=nb_images)
 
     plt.figure(figsize=(17, 17))
 
     for i in range(nb_images):
         plt.subplot(9, 9, 1 + i)
-        plt.axis('off')
         plt.imshow(
             samples[i].squeeze(0).clip(0, 1).cpu(),
             cmap='gray'
