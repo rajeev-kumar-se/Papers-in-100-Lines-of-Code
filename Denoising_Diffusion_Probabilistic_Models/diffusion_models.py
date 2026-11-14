@@ -98,6 +98,8 @@ class DiffusionModel(nn.Module):
         eps = torch.randn_like(x0)
 
         # Take one gradient descent step
+        # alpha_bar_t = [64]
+        # x0 = [64, 1, 32, 32]
         alpha_bar_t = self.alpha_bar[t - 1].unsqueeze(-1).unsqueeze(
             -1).unsqueeze(-1)
 
