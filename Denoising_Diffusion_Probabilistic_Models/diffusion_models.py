@@ -34,7 +34,6 @@
 #     c. Return generated image x0.
 import torch
 import torch.nn as nn
-import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from keras.datasets.mnist import load_data
@@ -44,13 +43,15 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # data loading and preprocessing
 (trainX, trainy), (testX, testy) = load_data()
-trainX = np.float32(trainX) / 255.
-testX = np.float32(testX) / 255.
+trainX = torch.tensor(trainX, dtype=torch.float32) / 255.
+testX = torch.tensor(testX, dtype=torch.float32) / 255.
+trainy = torch.as_tensor(trainy)
+testy = torch.as_tensor(testy)
 
 # sample batch 
 def sample_batch(batch_size):
     indices = torch.randperm(trainX.shape[0])[:batch_size]
-    data = torch.from_numpy(trainX[indices]).unsqueeze(1).to(device)
+    data = trainX[indices].unsqueeze(1).to(device)
     return torch.nn.functional.interpolate(data, 32)
 
 # main model class with init, sampling and training methods
@@ -162,7 +163,7 @@ if __name__ == "__main__":
         plt.subplot(9, 9, 1 + i)
         plt.axis('off')
         plt.imshow(
-            samples[i].squeeze(0).clip(0, 1).data.cpu().numpy(),
+            samples[i].squeeze(0).clip(0, 1).cpu(),
             cmap='gray'
         )
 
