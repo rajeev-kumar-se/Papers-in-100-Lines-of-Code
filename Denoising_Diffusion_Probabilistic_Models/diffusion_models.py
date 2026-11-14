@@ -20,14 +20,21 @@ def sample_batch(batch_size):
     return torch.nn.functional.interpolate(data, 32)
 
 # main model class with init, sampling and training methods
-class DiffusionModel:
+class DiffusionModel(nn.Module):
 
     def __init__(self, T: int, model: nn.Module):
+        super().__init__()
+
         self.T = T
         self.function_approximator = model
-        self.beta = torch.linspace(1e-4, 0.02, T).to(self.device)
-        self.alpha = 1. - self.beta
-        self.alpha_bar = torch.cumprod(self.alpha, dim=0)
+
+        beta = torch.linspace(1e-4, 0.02, T)
+        alpha = 1. - beta
+        alpha_bar = torch.cumprod(alpha, dim=0)
+
+        self.register_buffer("beta", beta)
+        self.register_buffer("alpha", alpha)
+        self.register_buffer("alpha_bar", alpha_bar)
 
     def training(self, batch_size, optimizer):
         """
@@ -35,16 +42,27 @@ class DiffusionModel:
         """
 
         x0 = sample_batch(batch_size)
-        t = torch.randint(1, self.T + 1, (batch_size,), device,
-                          dtype=torch.long)
+
+        t = torch.randint(
+            1, self.T + 1, (batch_size,),
+            device=device,
+            dtype=torch.long
+        )
+
         eps = torch.randn_like(x0)
 
         # Take one gradient descent step
         alpha_bar_t = self.alpha_bar[t - 1].unsqueeze(-1).unsqueeze(
             -1).unsqueeze(-1)
-        eps_predicted = self.function_approximator(torch.sqrt(
-            alpha_bar_t) * x0 + torch.sqrt(1 - alpha_bar_t) * eps, t - 1)
+
+        eps_predicted = self.function_approximator(
+            torch.sqrt(alpha_bar_t) * x0 +
+            torch.sqrt(1 - alpha_bar_t) * eps,
+            t - 1
+        )
+
         loss = nn.functional.mse_loss(eps, eps_predicted)
+
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -52,33 +70,45 @@ class DiffusionModel:
         return loss.item()
 
     @torch.no_grad()
-    def sampling(self, n_samples=1, image_channels=1, img_size=(32, 32),
-                 use_tqdm=True):
+    def sampling(self, n_samples=1, image_channels=1, img_size=(32, 32)):
         """
         Algorithm 2 in Denoising Diffusion Probabilistic Models
         """
 
-        x = torch.randn((n_samples, image_channels, img_size[0], img_size[1]),
-                        device)
-        progress_bar = tqdm if use_tqdm else lambda x: x
-        for t in progress_bar(range(self.T, 0, -1)):
+        x = torch.randn(
+            (n_samples, image_channels, img_size[0], img_size[1]),
+            device=device
+        )
+
+        for t in tqdm(range(self.T, 0, -1)):
             z = torch.randn_like(x) if t > 1 else torch.zeros_like(x)
-            t = torch.ones(n_samples, dtype=torch.long, device) * t
+
+            t = torch.ones(
+                n_samples,
+                dtype=torch.long,
+                device=device
+            ) * t
 
             beta_t = self.beta[t - 1].unsqueeze(-1).unsqueeze(-1).unsqueeze(-1)
             alpha_t = self.alpha[t - 1].unsqueeze(-1).unsqueeze(-1).unsqueeze(-1)
             alpha_bar_t = self.alpha_bar[t - 1].unsqueeze(-1).unsqueeze(-1).unsqueeze(-1)
 
-            mean = 1 / torch.sqrt(alpha_t) * (x - ((1 - alpha_t) / torch.sqrt(
-                1 - alpha_bar_t)) * self.function_approximator(x, t - 1))
+            mean = 1 / torch.sqrt(alpha_t) * (
+                x - ((1 - alpha_t) / torch.sqrt(1 - alpha_bar_t)) *
+                self.function_approximator(x, t - 1)
+            )
+
             sigma = torch.sqrt(beta_t)
             x = mean + sigma * z
+
         return x
 
 
 if __name__ == "__main__":
+
     # Arch Prep
     batch_size = 64
+
     denoiser_model = UNet()
     diffusion_model = DiffusionModel(1000, denoiser_model).to(device)
 
@@ -89,11 +119,17 @@ if __name__ == "__main__":
 
     # Inference
     nb_images = 81
-    samples = diffusion_model.sampling(n_samples=nb_images, use_tqdm=False)
+
+    samples = diffusion_model.sampling(n_samples=nb_images)
+
     plt.figure(figsize=(17, 17))
+
     for i in range(nb_images):
         plt.subplot(9, 9, 1 + i)
         plt.axis('off')
-        plt.imshow(samples[i].squeeze(0).clip(0, 1).data.cpu().numpy(),
-                   cmap='gray')
+        plt.imshow(
+            samples[i].squeeze(0).clip(0, 1).data.cpu().numpy(),
+            cmap='gray'
+        )
+
     plt.savefig(f'Imgs/samples.png')
