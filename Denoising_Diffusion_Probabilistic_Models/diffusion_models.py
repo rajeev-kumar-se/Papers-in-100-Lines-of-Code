@@ -80,10 +80,10 @@ if __name__ == "__main__":
     # Arch Prep
     batch_size = 64
     denoiser_model = UNet()
-    optimizer = torch.optim.Adam(denoiser_model.parameters(), lr=2e-5)
     diffusion_model = DiffusionModel(1000, denoiser_model).to(device)
 
     # Training
+    optimizer = torch.optim.Adam(denoiser_model.parameters(), lr=2e-5)
     for epoch in tqdm(range(40_000)):
         loss = diffusion_model.training(batch_size, optimizer)
 
