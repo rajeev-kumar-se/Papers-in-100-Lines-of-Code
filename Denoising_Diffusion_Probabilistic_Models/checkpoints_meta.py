@@ -96,20 +96,15 @@ def main():
         )
         print(f"rewrote {path}  (step {STEPS[pct]}, {os.path.getsize(path)/1e6:.1f} MB)")
 
-    # best.pt: the final weights, never overwritten by training again
-    if os.path.exists("checkpoints/simple_unet_100.pt"):
-        best = load_ckpt("checkpoints/simple_unet_100.pt")
-        best["notes"] += " | promoted to best after evaluation"
-        torch.save(best, "checkpoints/best.pt")
-        print("copied -> checkpoints/best.pt")
-
-    # rotation policy, so disk use is a decision and not an accident
+    # no best.pt copy: it would be byte-identical to the 100% checkpoint below,
+    # since nothing was trained after it. a duplicate is not a checkpoint.
     with open("checkpoints/manifest.json", "w") as f:
         json.dump(
             {
+                "best": "checkpoints/simple_unet_100.pt",
                 "checkpoints": manifest,
                 "policy": {
-                    "keep_permanent": ["best.pt", "*_025.pt", "*_050.pt", "*_075.pt", "*_100.pt"],
+                    "keep_permanent": ["*_025.pt", "*_050.pt", "*_075.pt", "*_100.pt"],
                     "keep_rolling": "last 3 if a run saves every 1k steps",
                     "mnist_cnn.pt": "evaluation classifier, not part of the diffusion model",
                 },

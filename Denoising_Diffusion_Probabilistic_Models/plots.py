@@ -115,7 +115,7 @@ def g02_fid_vs_n(m):
     ax.set_ylabel("FID (log)")
     ax.set_title("FID is biased at small n — this is why we report the floor")
     ax.grid(alpha=0.2)
-    ax.legend()
+    ax.legend(loc="lower left")
     save(fig, "g02_fid_vs_n.png")
 
 
@@ -311,13 +311,20 @@ def main():
     os.makedirs(f"{DIR}/graphs", exist_ok=True)
     os.makedirs(f"{DIR}/samples", exist_ok=True)
     m = load()
+    # tensors/ holds the cached samples (~110 MB) and is not kept in the repo.
+    # the three panels below need pixels, not just numbers, so re-run
+    # `python evaluate.py` once to regenerate the cache if they are missing.
+    have_tensors = os.path.exists(f"{DIR}/tensors/real_a.pt")
 
     print("graphs:")
     g01_fid_kid_vs_steps(m)
     g02_fid_vs_n(m)
     g03_loss_and_fid(m)
-    g04_progression(m)
-    g05_real_vs_generated(m)
+    if have_tensors:
+        g04_progression(m)
+        g05_real_vs_generated(m)
+    else:
+        print("  skip g04, g05 (no cached samples; run evaluate.py first)")
     g06_precision_recall(m)
     g07_class_hist(m)
     g08_confidence(m)
@@ -325,8 +332,11 @@ def main():
     g10_per_timestep(m)
     g11_schedule()
 
-    print("samples:")
-    sample_grids()
+    if have_tensors:
+        print("samples:")
+        sample_grids()
+    else:
+        print("samples: skipped (no cached samples; run evaluate.py first)")
 
 
 if __name__ == "__main__":

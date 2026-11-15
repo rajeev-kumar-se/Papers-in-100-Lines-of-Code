@@ -1,4 +1,5 @@
 {
+  "best": "checkpoints/simple_unet_100.pt",
   "checkpoints": [
     {
       "file": "checkpoints/simple_unet_025.pt",
@@ -35,7 +36,6 @@
   ],
   "policy": {
     "keep_permanent": [
-      "best.pt",
       "*_025.pt",
       "*_050.pt",
       "*_075.pt",
