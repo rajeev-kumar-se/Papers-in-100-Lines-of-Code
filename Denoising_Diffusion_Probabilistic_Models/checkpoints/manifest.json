@@ -1,0 +1,48 @@
+{
+  "checkpoints": [
+    {
+      "file": "checkpoints/simple_unet_025.pt",
+      "pct": 25,
+      "step": 2500,
+      "params": 2212481,
+      "bytes": 8900083,
+      "resumable": false
+    },
+    {
+      "file": "checkpoints/simple_unet_050.pt",
+      "pct": 50,
+      "step": 5000,
+      "params": 2212481,
+      "bytes": 8900083,
+      "resumable": false
+    },
+    {
+      "file": "checkpoints/simple_unet_075.pt",
+      "pct": 75,
+      "step": 7500,
+      "params": 2212481,
+      "bytes": 8900083,
+      "resumable": false
+    },
+    {
+      "file": "checkpoints/simple_unet_100.pt",
+      "pct": 100,
+      "step": 10000,
+      "params": 2212481,
+      "bytes": 8900083,
+      "resumable": false
+    }
+  ],
+  "policy": {
+    "keep_permanent": [
+      "best.pt",
+      "*_025.pt",
+      "*_050.pt",
+      "*_075.pt",
+      "*_100.pt"
+    ],
+    "keep_rolling": "last 3 if a run saves every 1k steps",
+    "mnist_cnn.pt": "evaluation classifier, not part of the diffusion model"
+  },
+  "storage_note": "2.2M params = 8.8 MB weights, ~27 MB with Adam state"
+}

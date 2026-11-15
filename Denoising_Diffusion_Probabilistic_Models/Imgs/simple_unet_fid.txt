@@ -1,0 +1,6 @@
+model_params=2212481
+config={'steps': 10000, 'batch': 256, 'lr': 0.0003, 'T': 1000, 'fid_n': 1000, 'seed': 0, 'tag': 'simple_unet'}
+train_minutes=11.4
+fid_model=43.4725
+fid_real_vs_real_floor=12.1871
+fid_noise=414.1520

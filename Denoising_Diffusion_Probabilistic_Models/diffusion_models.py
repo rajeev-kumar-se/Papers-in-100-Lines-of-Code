@@ -36,7 +36,7 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from keras.datasets.mnist import load_data
+from torchvision.datasets import MNIST
 from unet import UNet
 # declare once and use it everywhere
 # torch.device = where tensor operations will be performed (CPU or GPU)
@@ -47,11 +47,15 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # ([60000, 28, 28], [60000], [10000, 28, 28], [10000])
 # trainX[0] = 28x28 image, trainy[0] = label of trainX[0]
 # we should always normalize the data to [0, 1] range for better convergence
-(trainX, trainy), (testX, testy) = load_data()
-trainX = torch.tensor(trainX, dtype=torch.float32) / 255.
-testX = torch.tensor(testX, dtype=torch.float32) / 255.
-trainy = torch.as_tensor(trainy)
-testy = torch.as_tensor(testy)
+# torchvision instead of keras: keras 3 needs tensorflow installed to import,
+# and the MNIST files are already unpacked in data/. Same (trainX, trainy),
+# (testX, testy) tuple as load_data(), same [60000, 28, 28] / [10000, 28, 28].
+train_set = MNIST("data", train=True, download=True)
+test_set = MNIST("data", train=False, download=True)
+trainX = train_set.data.float() / 255.
+testX = test_set.data.float() / 255.
+trainy = train_set.targets
+testy = test_set.targets
 
 # sample batch 
 def sample_batch(batch_size):
@@ -82,7 +86,10 @@ class DiffusionModel(nn.Module):
         self.register_buffer("alpha", alpha)
         self.register_buffer("alpha_bar", alpha_bar)
 
-    def training(self, batch_size, optimizer):
+    # NOT named `training`: nn.Module.__init__ sets self.training = True, and an
+    # instance attribute beats a class method, so `model.training(...)` would
+    # raise "'bool' object is not callable".
+    def train_step(self, batch_size, optimizer):
         """
         Algorithm 1 in Denoising Diffusion Probabilistic Models
         """
@@ -167,7 +174,7 @@ if __name__ == "__main__":
     # Training
     optimizer = torch.optim.Adam(denoiser_model.parameters(), lr=2e-5)
     for epoch in tqdm(range(40_000)):
-        loss = diffusion_model.training(batch_size, optimizer)
+        loss = diffusion_model.train_step(batch_size, optimizer)
 
     # Inference
     nb_images = 81
