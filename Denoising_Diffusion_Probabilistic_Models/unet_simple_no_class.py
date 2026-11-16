@@ -8,7 +8,7 @@ import math
 import torch, torch.nn as nn, torch.nn.functional as F
 
 x = torch.randn(64, 1, 32, 32)                                                   # [B,1,32,32]: MNIST is grayscale
-t = torch.randint(0, 1000, (len(x),))                                            # [B] random step 0..999
+t = torch.randint(0, 1000, (64,))                                            # [B] random step 0..999
 # A timestep t is the index of a row in the noise schedule (√ᾱₜ, βₜ, …), so it has to be an integer in [0, T−1]
 
 freq = torch.exp(torch.arange(32.) * -(math.log(10000) / 31))                    # [32]
