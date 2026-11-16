@@ -8,8 +8,7 @@ https://www.learnpytorch.io/pytorch_cheatsheet/
 https://rstudio.github.io/cheatsheets/torch.pdf
 Explaining over lunch: Rule
 """
-import math
-import torch, torch.nn as nn, torch.nn.functional as F
+import math, torch, torch.nn as nn, torch.nn.functional as F
 
 # 64 images, 1 channel, 32x32. 1 channel because MNIST is grayscale (28x28 is
 # resized to 32x32 in diffusion_models.sample_batch so that three 2x pools land
