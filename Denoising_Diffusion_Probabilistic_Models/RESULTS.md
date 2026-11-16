@@ -125,12 +125,12 @@ logs/
 diffusion_models.py     the paper implementation: forward process, training loop, sampling
 unet.py                 the U-Net the paper describes (35.7M params)
 unet_simple.py          the small U-Net that was actually trained (2.2M params)
-utils/                  everything auxiliary; nothing here is imported by the three above
+denoisers.py            four alternative noise predictors, shape-checked only
+utils/                  the scripts around them; nothing here is imported by the files above
   run_simple_unet.py    train + sample + FID + calibration
   evaluate.py           the full evaluation run -> eval/metrics.json
   plots.py              eval/metrics.json -> eval/graphs + eval/samples
   checkpoints_meta.py   rewrites the four checkpoints into a resumable format
-  denoisers.py          four alternative noise predictors, shape-checked only
 ```
 
 Run the scripts from the project root (`python utils/evaluate.py`); they read and write the
@@ -147,7 +147,7 @@ Key images: [final samples](eval/samples/grid_100.png) ·
 - 45.6 is **not comparable** to published MNIST FIDs: different splits, n, resampling and preprocessing.
   It is only comparable to the 12.19 floor measured here, under this protocol.
 - Only one architecture was trained. `unet.py` (35.7M), `TinyUNet`, `DiT`, `ConvNet`, `MLP` have
-  parameter counts and timings in `utils/denoisers.py`, **no trained metrics**.
+  parameter counts and timings in `denoisers.py`, **no trained metrics**.
 - 3 sampling seeds only at the final checkpoint; 25/50/75% use seed 0.
 - No Inception Score, no FID-vs-published-baseline table, no resume-from-checkpoint (the original
   run did not save optimizer state; the field is null rather than fake).
