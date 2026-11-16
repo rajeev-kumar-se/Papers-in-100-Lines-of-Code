@@ -14,7 +14,7 @@ x = torch.randn(64, 1, 32, 32)                                                  
 # One integer step per image, uniform over 0..999 (T = 1000 in this repo).
 # randint, not randn: t is an index into the noise schedule, so it must be a
 # whole number, and uniform so every noise level is seen equally often.
-t = torch.randint(0, 1000, (len(x),))                                            # [B] random step 0..999
+t = torch.randint(0, 1000, (64,))                                            # [B] random step 0..999
 
 # Sinusoidal frequencies: freq_i = exp(-i * log(10000) / (half - 1)), i = 0..31.
 # This is the Transformer positional encoding applied to the scalar t: 32
