@@ -3,6 +3,9 @@
 Forward-pass demo only: PyTorch keeps the weights inside the layer object, so a
 layer built inline is freed after the call -- there is nothing left to train or
 to hand to an optimizer. The trainable version is unet_simple.py.
+https://www.youtube.com/watch?v=o5gPABcGZwc
+https://www.learnpytorch.io/pytorch_cheatsheet/
+https://rstudio.github.io/cheatsheets/torch.pdf
 """
 import math
 import torch, torch.nn as nn, torch.nn.functional as F
@@ -10,6 +13,8 @@ import torch, torch.nn as nn, torch.nn.functional as F
 # 64 images, 1 channel, 32x32. 1 channel because MNIST is grayscale (28x28 is
 # resized to 32x32 in diffusion_models.sample_batch so that three 2x pools land
 # exactly on 4x4; 28 is not divisible by 8). 64 is a normal training batch.
+# - 64 is the raw embedding — 32 sines + 32 cosines, straight out of the formula. No learning.
+# - 256 is the learned embedding (temb) — the 64 numbers pushed through a 2-layer MLP that widens them 4×. Every block adds the 256-wide version, not the 64-wide one.
 x = torch.randn(64, 1, 32, 32)                                                   # [B,1,32,32]: MNIST is grayscale
 # One integer step per image, uniform over 0..999 (T = 1000 in this repo).
 # randint, not randn: t is an index into the noise schedule, so it must be a
