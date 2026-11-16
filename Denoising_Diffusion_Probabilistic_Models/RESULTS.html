@@ -62,6 +62,8 @@ a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
 .foot{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);
   font-size:.8rem;color:var(--muted)}
+.arch{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.arch svg{width:100%;height:auto;display:block}
 /* interactive beta-schedule chart (section 2) */
 .sched{background:var(--card);border:1px solid var(--line);border-radius:12px;
   padding:14px 16px 12px}
@@ -113,7 +115,8 @@ code and the same sample count.</p>
 <table>
   <tbody>
     <tr><th>Model</th><td><code>SimpleUNet</code> (<code>unet_simple.py</code>) — conv3×3 + BatchNorm + ReLU,
-      MaxPool down, <code>Upsample</code>+skip-concat up, timestep as a per-channel bias</td></tr>
+      MaxPool down, <code>Upsample</code>+skip-concat up, timestep as a per-channel bias
+      (<a href="#arch">drawn below</a>)</td></tr>
     <tr><th>Parameters</th><td>2,212,481</td></tr>
     <tr><th>Not used</th><td>attention, residual blocks, transformer, zero-init — none of it</td></tr>
     <tr><th>Diffusion</th><td>T = 1000, linear β from 1e-4 to 0.02, ε-prediction, plain MSE</td></tr>
@@ -122,6 +125,147 @@ code and the same sample count.</p>
     <tr><th>Time</th><td>11.4 min (68 ms/step at the end), single GPU</td></tr>
   </tbody>
 </table>
+
+<figure id="arch">
+<div class="arch">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 906" width="100%" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" role="img" aria-label="SimpleUNet architecture">
+<defs>
+<marker id="ab" viewBox="0 0 10 10" refX="9.2" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0.6 L10,5 L0,9.4 z" fill="#1b4fd8"/></marker>
+<marker id="ar" viewBox="0 0 10 10" refX="9.2" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0.6 L10,5 L0,9.4 z" fill="#a31515"/></marker>
+<marker id="ag" viewBox="0 0 10 10" refX="9.2" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0.6 L10,5 L0,9.4 z" fill="#137a1f"/></marker>
+<marker id="ak" viewBox="0 0 10 10" refX="9.2" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0.6 L10,5 L0,9.4 z" fill="#9aa3ae"/></marker>
+<marker id="at" viewBox="0 0 10 10" refX="9.2" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0.6 L10,5 L0,9.4 z" fill="#0b7285"/></marker>
+<marker id="ap" viewBox="0 0 10 10" refX="9.2" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0.6 L10,5 L0,9.4 z" fill="#6b3fa0"/></marker>
+</defs>
+<rect x="250.0" y="77.6" width="12.8" height="204.8" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<rect x="274.8" y="77.6" width="12.8" height="204.8" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<line x1="262.8" y1="180.0" x2="274.8" y2="180.0" stroke="#1b4fd8" stroke-width="2.0" marker-end="url(#ab)"/>
+<text x="256.4" y="68.6" font-size="12" fill="#24303f" text-anchor="middle">32</text>
+<text x="281.2" y="68.6" font-size="12" fill="#24303f" text-anchor="middle">32</text>
+<text x="290.6" y="68.6" font-size="10" fill="#6b3fa0" text-anchor="start" font-weight="600">+t</text>
+<text x="268.8" y="52.6" font-size="10" fill="#5b6472" text-anchor="middle">enc1</text>
+<rect x="280.0" y="368.8" width="25.6" height="102.4" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<rect x="317.6" y="368.8" width="25.6" height="102.4" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<line x1="305.6" y1="420.0" x2="317.6" y2="420.0" stroke="#1b4fd8" stroke-width="2.0" marker-end="url(#ab)"/>
+<text x="292.8" y="359.8" font-size="12" fill="#24303f" text-anchor="middle">64</text>
+<text x="330.4" y="359.8" font-size="12" fill="#24303f" text-anchor="middle">64</text>
+<text x="346.2" y="359.8" font-size="10" fill="#6b3fa0" text-anchor="start" font-weight="600">+t</text>
+<text x="311.6" y="343.8" font-size="10" fill="#5b6472" text-anchor="middle">enc2</text>
+<rect x="335.0" y="534.4" width="51.2" height="51.2" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<rect x="398.2" y="534.4" width="51.2" height="51.2" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<line x1="386.2" y1="560.0" x2="398.2" y2="560.0" stroke="#1b4fd8" stroke-width="2.0" marker-end="url(#ab)"/>
+<text x="360.6" y="525.4" font-size="12" fill="#24303f" text-anchor="middle">128</text>
+<text x="423.8" y="525.4" font-size="12" fill="#24303f" text-anchor="middle">128</text>
+<text x="452.4" y="525.4" font-size="10" fill="#6b3fa0" text-anchor="start" font-weight="600">+t</text>
+<text x="392.2" y="509.4" font-size="10" fill="#5b6472" text-anchor="middle">enc3</text>
+<rect x="440.0" y="647.2" width="102.4" height="25.6" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<rect x="554.4" y="647.2" width="102.4" height="25.6" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<line x1="542.4" y1="660.0" x2="554.4" y2="660.0" stroke="#1b4fd8" stroke-width="2.0" marker-end="url(#ab)"/>
+<text x="491.2" y="638.2" font-size="12" fill="#24303f" text-anchor="middle">256</text>
+<text x="605.6" y="638.2" font-size="12" fill="#24303f" text-anchor="middle">256</text>
+<text x="659.8" y="638.2" font-size="10" fill="#6b3fa0" text-anchor="start" font-weight="600">+t</text>
+<text x="548.4" y="622.2" font-size="10" fill="#5b6472" text-anchor="middle">bottom</text>
+<rect x="210.0" y="77.6" width="3.2" height="204.8" fill="#ffffff" stroke="#3f6f9f" stroke-width="1"/>
+<line x1="213.2" y1="180.0" x2="250.0" y2="180.0" stroke="#1b4fd8" stroke-width="2.0" marker-end="url(#ab)"/>
+<text x="211.6" y="68.6" font-size="12" fill="#24303f" text-anchor="middle">1</text>
+<line x1="282.0" y1="282.4" x2="282.0" y2="368.8" stroke="#a31515" stroke-width="2.0" marker-end="url(#ar)"/>
+<line x1="338.0" y1="471.2" x2="338.0" y2="534.4" stroke="#a31515" stroke-width="2.0" marker-end="url(#ar)"/>
+<line x1="444.0" y1="585.6" x2="444.0" y2="647.2" stroke="#a31515" stroke-width="2.0" marker-end="url(#ar)"/>
+<rect x="640.0" y="534.4" width="102.4" height="51.2" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<rect x="742.4" y="534.4" width="51.2" height="51.2" fill="#ffffff" stroke="#3f6f9f" stroke-width="1"/>
+<text x="691.2" y="525.4" font-size="12" fill="#24303f" text-anchor="middle">256</text>
+<text x="768.0" y="525.4" font-size="10" fill="#5b6472" text-anchor="middle">128</text>
+<text x="691.2" y="509.4" font-size="10" fill="#5b6472" text-anchor="middle">dec3</text>
+<rect x="805.6" y="534.4" width="51.2" height="51.2" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<line x1="793.6" y1="560.0" x2="805.6" y2="560.0" stroke="#1b4fd8" stroke-width="2.0" marker-end="url(#ab)"/>
+<rect x="868.8" y="534.4" width="51.2" height="51.2" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<line x1="856.8" y1="560.0" x2="868.8" y2="560.0" stroke="#1b4fd8" stroke-width="2.0" marker-end="url(#ab)"/>
+<text x="831.2" y="525.4" font-size="12" fill="#24303f" text-anchor="middle">128</text>
+<text x="894.4" y="525.4" font-size="12" fill="#24303f" text-anchor="middle">128</text>
+<text x="923.0" y="525.4" font-size="10" fill="#6b3fa0" text-anchor="start" font-weight="600">+t</text>
+<rect x="640.0" y="368.8" width="51.2" height="102.4" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<rect x="691.2" y="368.8" width="25.6" height="102.4" fill="#ffffff" stroke="#3f6f9f" stroke-width="1"/>
+<text x="665.6" y="359.8" font-size="12" fill="#24303f" text-anchor="middle">128</text>
+<text x="704.0" y="359.8" font-size="10" fill="#5b6472" text-anchor="middle">64</text>
+<text x="665.6" y="343.8" font-size="10" fill="#5b6472" text-anchor="middle">dec2</text>
+<rect x="728.8" y="368.8" width="25.6" height="102.4" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<line x1="716.8" y1="420.0" x2="728.8" y2="420.0" stroke="#1b4fd8" stroke-width="2.0" marker-end="url(#ab)"/>
+<rect x="766.4" y="368.8" width="25.6" height="102.4" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<line x1="754.4" y1="420.0" x2="766.4" y2="420.0" stroke="#1b4fd8" stroke-width="2.0" marker-end="url(#ab)"/>
+<text x="741.6" y="359.8" font-size="12" fill="#24303f" text-anchor="middle">64</text>
+<text x="779.2" y="359.8" font-size="12" fill="#24303f" text-anchor="middle">64</text>
+<text x="795.0" y="359.8" font-size="10" fill="#6b3fa0" text-anchor="start" font-weight="600">+t</text>
+<rect x="640.0" y="77.6" width="25.6" height="204.8" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<rect x="665.6" y="77.6" width="12.8" height="204.8" fill="#ffffff" stroke="#3f6f9f" stroke-width="1"/>
+<text x="652.8" y="68.6" font-size="12" fill="#24303f" text-anchor="middle">64</text>
+<text x="672.0" y="68.6" font-size="10" fill="#5b6472" text-anchor="middle">32</text>
+<text x="652.8" y="52.6" font-size="10" fill="#5b6472" text-anchor="middle">dec1</text>
+<rect x="690.4" y="77.6" width="12.8" height="204.8" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<line x1="678.4" y1="180.0" x2="690.4" y2="180.0" stroke="#1b4fd8" stroke-width="2.0" marker-end="url(#ab)"/>
+<rect x="715.2" y="77.6" width="12.8" height="204.8" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<line x1="703.2" y1="180.0" x2="715.2" y2="180.0" stroke="#1b4fd8" stroke-width="2.0" marker-end="url(#ab)"/>
+<text x="696.8" y="68.6" font-size="12" fill="#24303f" text-anchor="middle">32</text>
+<text x="721.6" y="68.6" font-size="12" fill="#24303f" text-anchor="middle">32</text>
+<text x="731.0" y="68.6" font-size="10" fill="#6b3fa0" text-anchor="start" font-weight="600">+t</text>
+<line x1="650.0" y1="647.2" x2="650.0" y2="585.6" stroke="#137a1f" stroke-width="2.0" marker-end="url(#ag)"/>
+<line x1="650.0" y1="534.4" x2="650.0" y2="471.2" stroke="#137a1f" stroke-width="2.0" marker-end="url(#ag)"/>
+<line x1="650.0" y1="368.8" x2="650.0" y2="282.4" stroke="#137a1f" stroke-width="2.0" marker-end="url(#ag)"/>
+<line x1="287.6" y1="180.0" x2="640.0" y2="180.0" stroke="#9aa3ae" stroke-width="2.4" marker-end="url(#ak)"/>
+<line x1="343.2" y1="420.0" x2="640.0" y2="420.0" stroke="#9aa3ae" stroke-width="2.4" marker-end="url(#ak)"/>
+<line x1="449.4" y1="560.0" x2="640.0" y2="560.0" stroke="#9aa3ae" stroke-width="2.4" marker-end="url(#ak)"/>
+<line x1="728.0" y1="180.0" x2="758.0" y2="180.0" stroke="#0b7285" stroke-width="2.0" marker-end="url(#at)"/>
+<rect x="758.0" y="77.6" width="3.2" height="204.8" fill="#ffffff" stroke="#3f6f9f" stroke-width="1"/>
+<line x1="761.2" y1="180.0" x2="779.0" y2="180.0" stroke="#0b7285" stroke-width="2.0" marker-end="url(#at)"/>
+<text x="759.6" y="68.6" font-size="12" fill="#24303f" text-anchor="middle">1</text>
+<text x="152.0" y="182.0" font-size="18" fill="#14161b" text-anchor="end" font-weight="600">xₜ</text>
+<text x="152.0" y="202.0" font-size="11" fill="#5b6472" text-anchor="end">[1×32×32]</text>
+<text x="787.0" y="182.0" font-size="18" fill="#14161b" text-anchor="start" font-weight="600">ε̂</text>
+<text x="787.0" y="202.0" font-size="11" fill="#5b6472" text-anchor="start">[1×32×32]</text>
+<text x="278.0" y="299.4" font-size="10" fill="#5b6472" text-anchor="end">32×32</text>
+<text x="334.0" y="488.2" font-size="10" fill="#5b6472" text-anchor="end">16×16</text>
+<text x="440.0" y="602.6" font-size="10" fill="#5b6472" text-anchor="end">8×8</text>
+<text x="648.0" y="689.8" font-size="10" fill="#5b6472" text-anchor="end">4×4</text>
+<text x="275.0" y="329.6" font-size="9" fill="#a31515" text-anchor="end">2×2</text>
+<text x="331.0" y="506.8" font-size="9" fill="#a31515" text-anchor="end">2×2</text>
+<text x="437.0" y="620.4" font-size="9" fill="#a31515" text-anchor="end">2×2</text>
+<text x="643.0" y="616.4" font-size="9" fill="#137a1f" text-anchor="end">×2</text>
+<text x="643.0" y="502.8" font-size="9" fill="#137a1f" text-anchor="end">×2</text>
+<text x="643.0" y="325.6" font-size="9" fill="#137a1f" text-anchor="end">×2</text>
+<text x="296.0" y="173.0" font-size="9" fill="#6b7280" text-anchor="start">copy + concat</text>
+<text x="352.0" y="413.0" font-size="9" fill="#6b7280" text-anchor="start">copy + concat</text>
+<text x="458.0" y="553.0" font-size="9" fill="#6b7280" text-anchor="start">copy + concat</text>
+<text x="92.0" y="34.0" font-size="11" fill="#5b6472" text-anchor="start">bar height = feature-map size (32×32 → 4×4), bar width = channels</text>
+<line x1="92" y1="708" x2="940" y2="708" stroke="#e4e7ee"/>
+<text x="92.0" y="726.0" font-size="11" fill="#5b6472" text-anchor="start" font-weight="600">how to read it</text>
+<rect x="92.0" y="740.0" width="8.0" height="20.0" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<rect x="112.0" y="740.0" width="8.0" height="20.0" fill="#9ec5e8" stroke="#3f6f9f" stroke-width="1"/>
+<line x1="100.0" y1="750.0" x2="112.0" y2="750.0" stroke="#1b4fd8" stroke-width="1.6" marker-end="url(#ab)"/>
+<text x="130.0" y="754.0" font-size="10" fill="#24303f" text-anchor="start">DoubleConv: 2 bars = conv 3×3 → BN → ReLU, twice</text>
+<line x1="100.0" y1="766.0" x2="100.0" y2="786.0" stroke="#a31515" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="130.0" y="778.0" font-size="10" fill="#24303f" text-anchor="start">max pool 2×2 (H, W halve)</text>
+<line x1="100.0" y1="810.0" x2="100.0" y2="790.0" stroke="#137a1f" stroke-width="1.6" marker-end="url(#ag)"/>
+<text x="130.0" y="802.0" font-size="10" fill="#24303f" text-anchor="start">upsample nearest ×2 (H, W double)</text>
+<line x1="92.0" y1="820.0" x2="118.0" y2="820.0" stroke="#9aa3ae" stroke-width="2.4" marker-end="url(#ak)"/>
+<text x="130.0" y="826.0" font-size="10" fill="#24303f" text-anchor="start">copy + concat (skip) = the white bar</text>
+<line x1="92.0" y1="844.0" x2="118.0" y2="844.0" stroke="#0b7285" stroke-width="1.6" marker-end="url(#at)"/>
+<text x="130.0" y="850.0" font-size="10" fill="#24303f" text-anchor="start">1×1 conv: 32 → 1 channel, no activation</text>
+<text x="100.0" y="874.0" font-size="10" fill="#6b3fa0" text-anchor="middle" font-weight="600">+t</text>
+<text x="130.0" y="874.0" font-size="10" fill="#24303f" text-anchor="start">+t = Linear(256→c) of the timestep embedding</text>
+<rect x="552" y="714" width="332" height="166" rx="10" fill="#faf7ff" stroke="#e4dcf5"/>
+<text x="566.0" y="736.0" font-size="10" fill="#6b3fa0" text-anchor="start" font-weight="600">timestep embedding (the +t)</text>
+<text x="566.0" y="758.0" font-size="10" fill="#24303f" text-anchor="start">t → sinusoidal(64) → Linear 64→256</text>
+<text x="566.0" y="778.0" font-size="10" fill="#24303f" text-anchor="start">→ SiLU → Linear 256→256 = temb [256]</text>
+<text x="566.0" y="800.0" font-size="10" fill="#24303f" text-anchor="start">each DoubleConv adds Linear(256→c)</text>
+<text x="566.0" y="820.0" font-size="10" fill="#24303f" text-anchor="start">after its last ReLU; all 7 blocks</text>
+<text x="566.0" y="842.0" font-size="10" fill="#5b6472" text-anchor="start">T = 1000, linear β 1e-4 → 2e-2</text>
+<text x="566.0" y="862.0" font-size="10" fill="#5b6472" text-anchor="start">2,212,481 parameters, no attention</text>
+</svg>
+</div>
+<figcaption><code>SimpleUNet</code> with the default <code>base=32</code>, drawn to the convention of the original
+U-Net figure: <b>bar height = feature-map size</b> (32×32 → 4×4), <b>bar width = number of channels</b>. Blue arrows
+are the two 3×3 convs of each DoubleConv, red is MaxPool, green is nearest-neighbour ×2, grey is the skip copy and
+concat, teal is the 1×1 output conv. Every number is read off <code>unet_simple.py</code>.</figcaption>
+</figure>
 <p>Loss fell 0.0688 → 0.0151 (4.5×). FID fell 86.3 → 45.3 (2×), which is the point of the graph
 below: <b>training loss is not a quality metric.</b></p>
 <figure id="g03">

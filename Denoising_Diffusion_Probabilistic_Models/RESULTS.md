@@ -10,7 +10,7 @@ Every number here is in `eval/metrics.json`; every graph is in `eval/graphs/`.
 
 | | |
 |---|---|
-| Model | `SimpleUNet` (`unet_simple.py`) — conv3×3 + BatchNorm + ReLU, MaxPool down, `Upsample`+skip-concat up, timestep as a per-channel bias |
+| Model | `SimpleUNet` (`unet_simple.py`) — conv3×3 + BatchNorm + ReLU, MaxPool down, `Upsample`+skip-concat up, timestep as a per-channel bias ([layer diagram](RESULTS.html#arch)) |
 | Parameters | 2,212,481 |
 | Not used | attention, residual blocks, transformer, zero-init — none of it |
 | Diffusion | T = 1000, linear β from 1e-4 to 0.02, ε-prediction, plain MSE |
