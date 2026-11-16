@@ -6,6 +6,7 @@ to hand to an optimizer. The trainable version is unet_simple.py.
 https://www.youtube.com/watch?v=o5gPABcGZwc
 https://www.learnpytorch.io/pytorch_cheatsheet/
 https://rstudio.github.io/cheatsheets/torch.pdf
+Explaining over lunch: Rule
 """
 import math
 import torch, torch.nn as nn, torch.nn.functional as F
@@ -13,13 +14,13 @@ import torch, torch.nn as nn, torch.nn.functional as F
 # 64 images, 1 channel, 32x32. 1 channel because MNIST is grayscale (28x28 is
 # resized to 32x32 in diffusion_models.sample_batch so that three 2x pools land
 # exactly on 4x4; 28 is not divisible by 8). 64 is a normal training batch.
-# - 64 is the raw embedding — 32 sines + 32 cosines, straight out of the formula. No learning.
-# - 256 is the learned embedding (temb) — the 64 numbers pushed through a 2-layer MLP that widens them 4×. Every block adds the 256-wide version, not the 64-wide one.
 x = torch.randn(64, 1, 32, 32)                                                   # [B,1,32,32]: MNIST is grayscale
 # One integer step per image, uniform over 0..999 (T = 1000 in this repo).
+# Note the 64s here and in (64,) are the BATCH size -- they have nothing to do
+# with the 64-wide embedding below; that one is 2 * 32 frequencies.
 # randint, not randn: t is an index into the noise schedule, so it must be a
 # whole number, and uniform so every noise level is seen equally often.
-t = torch.randint(0, 1000, (64,))                                            # [B] random step 0..999
+t = torch.randint(0, 1000, (64,))                                                # [B] random step 0..999
 
 # Sinusoidal frequencies: freq_i = exp(-i * log(10000) / (half - 1)), i = 0..31.
 # This is the Transformer positional encoding applied to the scalar t: 32
@@ -29,8 +30,13 @@ freq = torch.exp(torch.arange(32.) * -(math.log(10000) / 31))                   
 # sin and cos of t * each frequency, concatenated -> 64 numbers describing t.
 # Both are needed: sin alone repeats every 2*pi / freq, cos breaks the tie.
 e = torch.cat([torch.sin(t[:, None] * freq), torch.cos(t[:, None] * freq)], 1)   # [B,64]
-# 2-layer MLP turns the 64-dim encoding into 256 dims (4 * t_dim, t_dim = 64).
-# The net decides which frequencies matter instead of using them raw.
+# Two widths appear below, and they are easy to mix up:
+#   64  = this raw code here (32 sines + 32 cosines, not learned yet)
+#   256 = the learned temb that comes out of the MLP (4 * t_dim, t_dim = 64)
+# every block adds the 256-wide temb, never the raw 64.
+# MLP widens 64 -> 256; this 4x factor is convention from unet.py (512 = 4*128),
+# not part of the diffusion math. The net decides which frequencies matter
+# instead of using them raw.
 e = nn.Linear(64, 256)(e)
 # SiLU (x * sigmoid(x)): smooth, used in DDPM; keeps negative values, unlike ReLU.
 e = F.silu(e)
