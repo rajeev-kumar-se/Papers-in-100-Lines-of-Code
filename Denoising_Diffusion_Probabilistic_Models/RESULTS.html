@@ -268,9 +268,21 @@ checkpoints/
   manifest.json         what each file is, and why they are not resumable
 logs/
   simple_unet.log       training log (loss every 500 steps)
-  evaluate.log          evaluation log, incl. the FID cross-check</code></pre>
-<p class="hint">Sample and feature caches are not kept; <code>python evaluate.py</code> regenerates them
-in ~5 minutes. This HTML embeds every image, so it opens on its own.</p>
+  evaluate.log          evaluation log, incl. the FID cross-check
+
+diffusion_models.py     the paper implementation: forward process, training loop, sampling
+unet.py                 the U-Net the paper describes (35.7M params)
+unet_simple.py          the small U-Net that was actually trained (2.2M params)
+utils/                  everything auxiliary; nothing here is imported by the three above
+  run_simple_unet.py    train + sample + FID + calibration
+  evaluate.py           the full evaluation run -&gt; eval/metrics.json
+  plots.py              eval/metrics.json -&gt; eval/graphs + eval/samples
+  checkpoints_meta.py   rewrites the four checkpoints into a resumable format
+  denoisers.py          four alternative noise predictors, shape-checked only</code></pre>
+<p class="hint">Run the scripts from the project root (<code>python utils/evaluate.py</code>); they read and
+write the relative paths above. Sample and feature caches are not kept, so
+<code>python utils/evaluate.py</code> regenerates them in ~5 minutes. This HTML embeds every image, so it
+opens on its own.</p>
 
 <h2><span class="num">10</span>What I do <b>not</b> claim</h2>
 <ul>
@@ -279,7 +291,7 @@ in ~5 minutes. This HTML embeds every image, so it opens on its own.</p>
     preprocessing. It is only comparable to the 12.19 floor measured here, under this protocol.</li>
   <li>Only one architecture was trained. <code>unet.py</code> (35.7M), <code>TinyUNet</code>,
     <code>DiT</code>, <code>ConvNet</code>, <code>MLP</code> have parameter counts and timings in
-    <code>denoisers.py</code>, <b>no trained metrics</b>.</li>
+    <code>utils/denoisers.py</code>, <b>no trained metrics</b>.</li>
   <li>3 sampling seeds only at the final checkpoint; 25/50/75% use seed 0.</li>
   <li>No Inception Score, no FID-vs-published-baseline table, no resume-from-checkpoint (the original
     run did not save optimizer state; the field is null rather than fake).</li>

@@ -1,6 +1,6 @@
 # One evaluation run over the checkpoints we already trained.
 #
-#     python evaluate.py --tag simple_unet
+#     python utils/evaluate.py --tag simple_unet
 #
 # produces eval/metrics.json + everything plots.py needs. no training here, so
 # nothing in this file can improve the model -- it only describes it.
@@ -22,7 +22,12 @@ import gc
 import json
 import os
 import re
+import sys
 import time
+
+# this file lives in utils/; unet.py and diffusion_models.py are one level up,
+# so put the project root on the path before the imports below run
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # silences joblib's Windows core-count probe (it shells out to wmic, which is
 # removed on newer Windows and prints a scary traceback for no reason)

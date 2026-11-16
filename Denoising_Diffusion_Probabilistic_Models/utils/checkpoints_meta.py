@@ -1,6 +1,6 @@
 # Bring the checkpoints we already have up to a resumable format.
 #
-#     python checkpoints_meta.py
+#     python utils/checkpoints_meta.py
 #
 # the training run saved only `{"model": state_dict}` at 4 milestones, which is
 # enough to sample but not enough to resume: no optimizer state, no step counter,

@@ -1,7 +1,12 @@
 import math
+import os
+import sys
 
 import torch
 import torch.nn as nn
+
+# this file lives in utils/; unet.py is one level up
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # reuse the sinusoidal embedding from the UNet file instead of rewriting it
 from unet import get_timestep_embedding

@@ -9,8 +9,8 @@
 #                          noise vs real  = what "no signal at all" scores
 #
 # run:
-#     python run_simple_unet.py                    # full run, ~25 min on a 4070
-#     python run_simple_unet.py --steps 2000       # quick look
+#     python utils/run_simple_unet.py                    # full run, ~25 min on a 4070
+#     python utils/run_simple_unet.py --steps 2000       # quick look
 #
 # why FID needs calibration here: FID is biased upward when the sample count is
 # small, so "FID = 40" is meaningless without knowing that this image set scores
@@ -19,7 +19,12 @@
 import argparse
 import os
 import shutil
+import sys
 import time
+
+# this file lives in utils/; unet.py, unet_simple.py and diffusion_models.py are
+# one level up, so put the project root on the path before the imports below run
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import matplotlib
 

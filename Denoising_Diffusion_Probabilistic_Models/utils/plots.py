@@ -1,6 +1,6 @@
 # Build every graph from eval/metrics.json + the cached tensors.
 #
-#     python plots.py
+#     python utils/plots.py
 #
 # CPU only, no model, no GPU: this just draws what evaluate.py measured, so it can
 # be re-run while tweaking labels without paying for the evaluation again.
@@ -313,7 +313,7 @@ def main():
     m = load()
     # tensors/ holds the cached samples (~110 MB) and is not kept in the repo.
     # the three panels below need pixels, not just numbers, so re-run
-    # `python evaluate.py` once to regenerate the cache if they are missing.
+    # `python utils/evaluate.py` once to regenerate the cache if they are missing.
     have_tensors = os.path.exists(f"{DIR}/tensors/real_a.pt")
 
     print("graphs:")
