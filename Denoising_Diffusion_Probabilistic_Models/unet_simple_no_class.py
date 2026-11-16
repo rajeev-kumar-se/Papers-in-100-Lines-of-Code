@@ -4,11 +4,12 @@ Forward-pass demo only: PyTorch keeps the weights inside the layer object, so a
 layer built inline is freed after the call -- there is nothing left to train or
 to hand to an optimizer. The trainable version is unet_simple.py.
 """
-# You can use PyTorch, Tensorflow, JAX, Keras
 import math
 import torch, torch.nn as nn, torch.nn.functional as F
 
-x, t = torch.randn(2, 1, 32, 32), torch.tensor([0, 999])                         # [B,1,32,32], [B]
+x = torch.randn(64, 1, 32, 32)                                                   # [B,1,32,32]: MNIST is grayscale
+t = torch.randint(0, 1000, (len(x),))                                            # [B] random step 0..999
+# A timestep t is the index of a row in the noise schedule (√ᾱₜ, βₜ, …), so it has to be an integer in [0, T−1]
 
 freq = torch.exp(torch.arange(32.) * -(math.log(10000) / 31))                    # [32]
 e = torch.cat([torch.sin(t[:, None] * freq), torch.cos(t[:, None] * freq)], 1)   # [B,64]
